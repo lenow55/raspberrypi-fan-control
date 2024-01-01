@@ -75,7 +75,8 @@ int getPinMode (int pin) {
 
 void setFanSpeed (int pin, int speed) {
     //gpioPWM(pin, speed);
-    gpioHardwarePWM(pin, FREQUENCY, speed);
+    int res = gpioHardwarePWM(pin, FREQUENCY, speed);
+    sd_journal_print(LOG_DEBUG, "[PWM] GPIO:Setting HW PWM result:  %d:\n", res);
 }
 
 int getCurrTemp () {
