@@ -56,6 +56,7 @@ int initPigpio () {
     config |= PI_CFG_NOSIGHANDLER;
     gpioCfgSetInternals(config);
     int status = gpioCfgClock(5, 0, 0);
+    sd_journal_print(LOG_DEBUG, "[PWM] GPIO:Clock init status:  %d:\n", status);
     if (status < 0) {
         sd_journal_print(LOG_ERR, "pigpio initialization failed ...");
         return -1;
@@ -73,7 +74,8 @@ int getPinMode (int pin) {
 }
 
 void setFanSpeed (int pin, int speed) {
-    gpioPWM(pin, speed);
+    //gpioPWM(pin, speed);
+    gpioHardwarePWM(pin, FREQUENCY, speed);
 }
 
 int getCurrTemp () {
@@ -89,9 +91,9 @@ int getCurrTemp () {
 void setupPwm () {
     origPwmPinMode = getPinMode(PWM_PIN);
     //gpioSetMode(PWM_PIN, PI_OUTPUT);
-    gpioSetMode(PWM_PIN, PI_OUTPUT);
-    gpioSetPWMfrequency(PWM_PIN, FREQUENCY);
-    gpioSetPWMrange(PWM_PIN, RPM_MAX);          // Set PWM range to Max RPM
+    //gpioSetPWMfrequency(PWM_PIN, FREQUENCY);
+    //gpioSetPWMrange(PWM_PIN, RPM_MAX);          // Set PWM range to Max RPM
+    gpioSetMode(PWM_PIN, PI_ALT5);
     setFanSpeed(PWM_PIN, RPM_OFF);              // Set Fan speed to 0 initially
     sd_journal_print(LOG_DEBUG, "[PWM] GPIO:Mode | %d:%d\n", PWM_PIN, origPwmPinMode);
     return;
