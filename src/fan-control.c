@@ -55,6 +55,11 @@ int initPigpio () {
     int config = gpioCfgGetInternals();
     config |= PI_CFG_NOSIGHANDLER;
     gpioCfgSetInternals(config);
+    int status = gpioCfgClock(5, 0);
+    if (status < 0) {
+        sd_journal_print(LOG_ERR, "pigpio initialization failed ...");
+        return -1;
+    }
     if (gpioInitialise() < 0) {
         sd_journal_print(LOG_ERR, "pigpio initialization failed ...");
         return -1;
@@ -83,6 +88,7 @@ int getCurrTemp () {
 
 void setupPwm () {
     origPwmPinMode = getPinMode(PWM_PIN);
+    #gpioSetMode(PWM_PIN, PI_OUTPUT);
     gpioSetMode(PWM_PIN, PI_OUTPUT);
     gpioSetPWMfrequency(PWM_PIN, FREQUENCY);
     gpioSetPWMrange(PWM_PIN, RPM_MAX);          // Set PWM range to Max RPM
